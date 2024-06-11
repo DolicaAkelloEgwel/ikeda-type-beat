@@ -1,12 +1,15 @@
 from app import App
 from app_components import clear_background
+from events.input import Buttons, BUTTON_TYPES
 
 class IkedaTypeBeat(App):
     def __init__(self):
-      pass
+      self.button_states = Buttons(self)
 
     def update(self, delta):
-      pass
+        if self.button_states.get(BUTTON_TYPES["CANCEL"]):
+            self.button_states.clear()
+            self.minimise()
 
     def draw(self, ctx):
         clear_background(ctx)
