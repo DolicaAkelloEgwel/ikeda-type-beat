@@ -2,9 +2,14 @@ from app import App
 from app_components import clear_background
 from events.input import Buttons, BUTTON_TYPES
 
+
+
 class IkedaTypeBeat(App):
     def __init__(self):
       self.button_states = Buttons(self)
+
+    def draw_lines(self, ctx):
+        pass
 
     def update(self, delta):
         if self.button_states.get(BUTTON_TYPES["CANCEL"]):
@@ -13,8 +18,6 @@ class IkedaTypeBeat(App):
 
     def draw(self, ctx):
         clear_background(ctx)
-        ctx.text_align = ctx.CENTER
-        ctx.text_baseline = ctx.MIDDLE
-        ctx.move_to(0, 0).gray(1).text("Hello, world!")
+        ctx.rgb(255,255,255).rectangle(-120,-120,240,240).fill()
 
 __app_export__ = IkedaTypeBeat
