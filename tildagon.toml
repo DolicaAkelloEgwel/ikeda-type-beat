@@ -22,13 +22,13 @@ category = "Badge"
 
 [metadata]
 # Your nickname.  Must be at most 32 characters!
-author = "hughrawlinson"
+author = "DolicaAkelloEgwel"
 
 # License of your app as an SPDX identifier: <https://spdx.org/licenses/>
 license = "LGPL-3.0-only"
 
 # URL to the repository of your app.
-url = "https://www.github.com/hughrawlinson/tildagon-demo"
+url = "https://github.com/DolicaAkelloEgwel/ikeda-type-beat"
 
 # Description of your app.  Maximum 140 characters!
 description = "Some visuals inspired by Ryoji Ikeda"
