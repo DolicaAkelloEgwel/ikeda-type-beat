@@ -5,13 +5,14 @@ from events.input import Buttons, BUTTON_TYPES
 
 MAX = 120
 
-ROW_HEIGHT = 12
+ROW_HEIGHT = 8
 GAP_HEIGHT = 2
 BLOCK_HEIGHT = ROW_HEIGHT - GAP_HEIGHT
-N_ROWS = 240 // ROW_HEIGHT
+N_ROWS = MAX * 2 // ROW_HEIGHT
 
+# these need to be even numbers
 LOWER_BLOCK = 4
-UPPER_BLOCK = 8
+UPPER_BLOCK = 18
 
 POSITION_LIST = [i for i in range(-120,120,4)]
 SPEEDS = [i for i in range(1,20)]
@@ -47,33 +48,27 @@ class IkedaTypeBeat(App):
             ctx.rgb(0,0,0).rectangle(-MAX, -MAX + (i * ROW_HEIGHT), 240, GAP_HEIGHT).fill()
 
     def draw_mirror_block(self, ctx, x1, x2, y, h):
-        w = x1 - x2
+        w = x2 - x1
         if x1 > x2:
-            ctx.rgb(0,0,0).rectangle(x1, y, 120 - x1, h).fill()
-            ctx.rgb(0,0,0).rectangle(-120, y, x2 + 120, h).fill()
+            ctx.rgb(0,0,0).rectangle(x1, y, MAX - x1, h).fill()
+            ctx.rgb(0,0,0).rectangle(-MAX, y, x2 + MAX, h).fill()
         else:
             ctx.rgb(0,0,0).rectangle(x1, y, w, h).fill()
     
     def move_blocks(self, ctx):
-        try:
-            for i in range(N_ROWS):
-                for xs in self.block_pos[i]:
-                    y = (i * ROW_HEIGHT + GAP_HEIGHT) - MAX
+        for i in range(N_ROWS):
+            for xs in self.block_pos[i]:
+                y = (i * ROW_HEIGHT + GAP_HEIGHT) - MAX
 
-                    self.draw_mirror_block(ctx, xs[0], xs[1], y, BLOCK_HEIGHT)
+                self.draw_mirror_block(ctx, xs[0], xs[1], y, BLOCK_HEIGHT)
 
-                    xs[0] += self.speeds[i]
-                    xs[1] += self.speeds[i]
+                xs[0] += self.speeds[i]
+                xs[1] += self.speeds[i]
 
-                    if xs[0] >= 119:
-                        xs[0] -= 240
-                    if xs[1] >= 119:
-                        xs[1] -= 240
-
-        except Exception as e:
-            with open("Log.txt", "a") as log_file:
-                log_file.write(str(e) + "\n")
-    
+                if xs[0] >= MAX:
+                    xs[0] -= MAX * 2
+                if xs[1] >= MAX:
+                    xs[1] -= MAX * 2
 
     def update(self, delta):
         if self.button_states.get(BUTTON_TYPES["CANCEL"]):
@@ -82,7 +77,7 @@ class IkedaTypeBeat(App):
 
     def draw(self, ctx):
         clear_background(ctx)
-        ctx.rgb(255,255,255).rectangle(-120,-120,240,240).fill()
+        ctx.rgb(255,255,255).rectangle(-MAX,-MAX,MAX*2,MAX*2).fill()
         self.draw_lines(ctx)
         self.move_blocks(ctx)
 
