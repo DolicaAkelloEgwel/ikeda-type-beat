@@ -3,15 +3,18 @@ from random import choice, randrange
 from app_components import clear_background
 from events.input import Buttons, BUTTON_TYPES
 
-ROW_HEIGHT = 20
+MAX = 120
+
+ROW_HEIGHT = 12
 GAP_HEIGHT = 2
 BLOCK_HEIGHT = ROW_HEIGHT - GAP_HEIGHT
 N_ROWS = 240 // ROW_HEIGHT
 
-LOWER_BLOCK = 8
-UPPER_BLOCK = 20
+LOWER_BLOCK = 4
+UPPER_BLOCK = 8
 
-POSITION_LIST = [i for i in range(-120,121)]
+POSITION_LIST = [i for i in range(-120,120,4)]
+SPEEDS = [i for i in range(1,20)]
 
 def _sample(population, n_vals):
     if n_vals > len(population):
@@ -23,12 +26,13 @@ def _sample(population, n_vals):
         if index not in indices:
             indices.add(index)
             result.append(population[index])
-    return result
+    return sorted(result)
 
 class IkedaTypeBeat(App):
     def __init__(self):
         self.button_states = Buttons(self)
         self.block_pos = []
+        self.speeds = [choice(SPEEDS) for _ in range(N_ROWS)]
 
         for _ in range(N_ROWS):
             n_block_points = choice(range(LOWER_BLOCK, UPPER_BLOCK, 2))
@@ -36,19 +40,40 @@ class IkedaTypeBeat(App):
 
     def get_random_points(self, n_block_points):
         points = _sample(POSITION_LIST, n_block_points)
-        return [(points[i], points[i+1]) for i in range(0, len(points), 2)]
+        return [[points[i], points[i+1]] for i in range(0, len(points), 2)]
 
     def draw_lines(self, ctx):
         for i in range(N_ROWS):
-            ctx.rgb(0,0,0).rectangle(-120, -120 + (i * ROW_HEIGHT), 240, GAP_HEIGHT).fill()
+            ctx.rgb(0,0,0).rectangle(-MAX, -MAX + (i * ROW_HEIGHT), 240, GAP_HEIGHT).fill()
 
-    def mirror_block(self, ctx, rgb, x, y, w, h):
-        pass
+    def draw_mirror_block(self, ctx, x1, x2, y, h):
+        w = x1 - x2
+        if x1 > x2:
+            ctx.rgb(0,0,0).rectangle(x1, y, 120 - x1, h).fill()
+            ctx.rgb(0,0,0).rectangle(-120, y, x2 + 120, h).fill()
+        else:
+            ctx.rgb(0,0,0).rectangle(x1, y, w, h).fill()
     
     def move_blocks(self, ctx):
-        for i in range(N_ROWS):
-            for xs in self.block_pos[i]:
-                ctx.rgb(0,0,0).rectangle(xs[0], (i * ROW_HEIGHT + GAP_HEIGHT) - 120, xs[0] + xs[1], BLOCK_HEIGHT).fill()
+        try:
+            for i in range(N_ROWS):
+                for xs in self.block_pos[i]:
+                    y = (i * ROW_HEIGHT + GAP_HEIGHT) - MAX
+
+                    self.draw_mirror_block(ctx, xs[0], xs[1], y, BLOCK_HEIGHT)
+
+                    xs[0] += self.speeds[i]
+                    xs[1] += self.speeds[i]
+
+                    if xs[0] >= 119:
+                        xs[0] -= 240
+                    if xs[1] >= 119:
+                        xs[1] -= 240
+
+        except Exception as e:
+            with open("Log.txt", "a") as log_file:
+                log_file.write(str(e) + "\n")
+    
 
     def update(self, delta):
         if self.button_states.get(BUTTON_TYPES["CANCEL"]):
