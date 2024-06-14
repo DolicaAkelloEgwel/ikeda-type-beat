@@ -16,7 +16,7 @@ LOWER_BLOCK = 4
 UPPER_BLOCK = 22
 
 LOWER_SPEED = 1
-MAX_SPEED = 16
+UPPER_SPEED = 16
 
 POSITION_LIST = [i for i in range(-120, 120, 2)]
 
@@ -38,7 +38,7 @@ class IkedaTypeBeat(App):
     def __init__(self):
         self.button_states = Buttons(self)
         self.block_pos = []
-        self.speeds = [randint(LOWER_SPEED, MAX_SPEED) for _ in range(N_ROWS)]
+        self.speeds = [randint(LOWER_SPEED, UPPER_SPEED) for _ in range(N_ROWS)]
 
         for _ in range(N_ROWS):
             n_block_points = choice(range(LOWER_BLOCK, UPPER_BLOCK, 2))
