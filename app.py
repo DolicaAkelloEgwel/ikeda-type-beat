@@ -39,6 +39,9 @@ class IkedaTypeBeat(App):
         self.button_states = Buttons(self)
         self.block_pos = []
         self.speeds = [randint(LOWER_SPEED, UPPER_SPEED) for _ in range(N_ROWS)]
+        self.modes = [self._block_stream, self._two_columns]
+        self._current = self.modes[0]
+        self._index = 0
 
         for _ in range(N_ROWS):
             n_block_points = choice(range(LOWER_BLOCK, UPPER_BLOCK, 2))
@@ -56,7 +59,7 @@ class IkedaTypeBeat(App):
         else:
             ctx.rgb(255, 255, 255).rectangle(x1, y, w, h).fill()
 
-    def move_blocks(self, ctx):
+    def _block_stream(self, ctx):
         for i in range(N_ROWS):
             for xs in self.block_pos[i]:
                 y = (i * ROW_HEIGHT + GAP_HEIGHT) - MAX
@@ -71,15 +74,32 @@ class IkedaTypeBeat(App):
                 if xs[1] >= MAX:
                     xs[1] -= SCREEN_SIZE
 
+    def _two_columns(self, ctx):
+        ctx.rgb(255, 255, 255).rectangle(-MAX, -MAX, MAX, SCREEN_SIZE).fill()
+        ctx.rgb(0, 0, 0).rectangle(0, 0, MAX, SCREEN_SIZE).fill()
+
     def update(self, delta):
         if self.button_states.get(BUTTON_TYPES["CANCEL"]):
             self.button_states.clear()
             self.minimise()
+        elif self.button_states.get(BUTTON_TYPES["UP"]):
+            self._index = (self._index - 1) % len(self.modes)
+            self._current = self.modes[self._index]
+            self.button_states.clear()
+        elif self.button_states.get(BUTTON_TYPES["DOWN"]):
+            self._index = (self._index + 1) % len(self.modes)
+            self._current = self.modes[self._index]
+            self.button_states.clear()
 
     def draw(self, ctx):
         clear_background(ctx)
         ctx.rgb(0, 0, 0).rectangle(-MAX, -MAX, SCREEN_SIZE, SCREEN_SIZE).fill()
-        self.move_blocks(ctx)
+        try:
+            self._current(ctx)
+        except Exception as e:
+            with open("log.txt", "w") as log_file:
+                log_file.write(str(e))
+                self.minimise()
 
 
 __app_export__ = IkedaTypeBeat
