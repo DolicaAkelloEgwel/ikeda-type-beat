@@ -20,6 +20,8 @@ UPPER_SPEED = 16
 
 POSITION_LIST = [i for i in range(-120, 120)]
 
+COLUMN_BLOCK_HEIGHT = 20
+
 
 def _sample(population, n_vals):
     if n_vals > len(population):
@@ -54,10 +56,11 @@ class IkedaTypeBeat(App):
         self._column_block_pos = []
         for _ in range(2):
             column_points = []
-            block_length = 10
-            n_blocks = SCREEN_SIZE // block_length
+            n_blocks = SCREEN_SIZE // COLUMN_BLOCK_HEIGHT
             for _ in range(n_blocks):
-                column_points.append(_sample([i for i in range(10)], 2))
+                column_points.append(
+                    _sample([i for i in range(COLUMN_BLOCK_HEIGHT)], 2)
+                )
             self._column_block_pos.append(column_points)
 
     def _get_random_points(self, n_block_points):
@@ -93,7 +96,7 @@ class IkedaTypeBeat(App):
             for j in range(len(self._column_block_pos[i])):
                 ys = self._column_block_pos[i][j]
                 height = ys[1] - ys[0]
-                offset = j * 24 - MAX + randint(0, 10 - height)
+                offset = j * 24 - MAX + randint(0, COLUMN_BLOCK_HEIGHT - height)
                 ctx.rgb(255 * i, 255 * i, 255 * i).rectangle(
                     i * MAX - MAX, offset, MAX, ys[1] - ys[0]
                 ).fill()
