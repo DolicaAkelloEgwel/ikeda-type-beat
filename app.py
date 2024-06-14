@@ -6,7 +6,7 @@ from events.input import Buttons, BUTTON_TYPES
 MAX = 120
 SCREEN_SIZE = MAX * 2
 
-ROW_HEIGHT = 10
+ROW_HEIGHT = 5
 GAP_HEIGHT = 1
 BLOCK_HEIGHT = ROW_HEIGHT - GAP_HEIGHT
 N_ROWS = MAX * 2 // ROW_HEIGHT
@@ -15,10 +15,10 @@ N_ROWS = MAX * 2 // ROW_HEIGHT
 LOWER_BLOCK = 4
 UPPER_BLOCK = 22
 
-LOWER_SPEED = 2
+LOWER_SPEED = 1
 MAX_SPEED = 16
 
-POSITION_LIST = [i for i in range(-120, 120)]
+POSITION_LIST = [i for i in range(-120, 120, 2)]
 
 
 def _sample(population, n_vals):
@@ -48,19 +48,13 @@ class IkedaTypeBeat(App):
         points = _sample(POSITION_LIST, n_block_points)
         return [[points[i], points[i + 1]] for i in range(0, len(points), 2)]
 
-    def draw_lines(self, ctx):
-        for i in range(N_ROWS):
-            ctx.rgb(0, 0, 0).rectangle(
-                -MAX, -MAX + (i * ROW_HEIGHT), SCREEN_SIZE, GAP_HEIGHT
-            ).fill()
-
     def draw_mirror_block(self, ctx, x1, x2, y, h):
         w = x2 - x1
         if x1 > x2:
-            ctx.rgb(0, 0, 0).rectangle(x1, y, MAX - x1, h).fill()
-            ctx.rgb(0, 0, 0).rectangle(-MAX, y, x2 + MAX, h).fill()
+            ctx.rgb(255, 255, 255).rectangle(x1, y, MAX - x1, h).fill()
+            ctx.rgb(255, 255, 255).rectangle(-MAX, y, x2 + MAX, h).fill()
         else:
-            ctx.rgb(0, 0, 0).rectangle(x1, y, w, h).fill()
+            ctx.rgb(255, 255, 255).rectangle(x1, y, w, h).fill()
 
     def move_blocks(self, ctx):
         for i in range(N_ROWS):
@@ -84,8 +78,7 @@ class IkedaTypeBeat(App):
 
     def draw(self, ctx):
         clear_background(ctx)
-        ctx.rgb(255, 255, 255).rectangle(-MAX, -MAX, SCREEN_SIZE, SCREEN_SIZE).fill()
-        self.draw_lines(ctx)
+        ctx.rgb(0, 0, 0).rectangle(-MAX, -MAX, SCREEN_SIZE, SCREEN_SIZE).fill()
         self.move_blocks(ctx)
 
 
