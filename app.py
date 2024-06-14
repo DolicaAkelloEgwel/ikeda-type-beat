@@ -88,13 +88,15 @@ class IkedaTypeBeat(App):
                     xs[1] -= SCREEN_SIZE
 
     def _two_columns(self, ctx):
+        ctx.rgb(255, 255, 255).rectangle(-MAX, -MAX, MAX, SCREEN_SIZE).fill()
         for i in range(2):
             for j in range(len(self._column_block_pos[i])):
                 offset = j * 24 - MAX
                 ys = self._column_block_pos[i][j]
-                ctx.rgb(255, 255, 255).rectangle(
+                ctx.rgb(255 * i, 255 * i, 255 * i).rectangle(
                     i * MAX - MAX, offset, MAX, ys[1] - ys[0]
                 ).fill()
+                self._column_block_pos[i][j] = _sample([i for i in range(10)], 2)
 
     def update(self, delta):
         if self.button_states.get(BUTTON_TYPES["CANCEL"]):
