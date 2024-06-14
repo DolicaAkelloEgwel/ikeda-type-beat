@@ -6,19 +6,19 @@ from events.input import Buttons, BUTTON_TYPES
 MAX = 120
 SCREEN_SIZE = MAX * 2
 
-ROW_HEIGHT = 5
+ROW_HEIGHT = 9
 GAP_HEIGHT = 1
 BLOCK_HEIGHT = ROW_HEIGHT - GAP_HEIGHT
-N_ROWS = MAX * 2 // ROW_HEIGHT
+N_ROWS = MAX * 2 // ROW_HEIGHT + 1
 
 # these need to be even numbers
 LOWER_BLOCK = 4
-UPPER_BLOCK = 22
+UPPER_BLOCK = 30
 
 LOWER_SPEED = 1
 UPPER_SPEED = 16
 
-POSITION_LIST = [i for i in range(-120, 120, 2)]
+POSITION_LIST = [i for i in range(-120, 120)]
 
 
 def _sample(population, n_vals):
