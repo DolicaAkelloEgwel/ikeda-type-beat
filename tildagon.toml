@@ -31,10 +31,10 @@ license = "LGPL-3.0-only"
 url = "https://github.com/DolicaAkelloEgwel/ikeda-type-beat"
 
 # Description of your app.  Maximum 140 characters!
-description = "Some visuals inspired by Ryoji Ikeda"
+description = "Some visuals inspired by Ryoji Ikeda. Use the A and D buttons to switch between different modes."
 
 # Version number of your app.  If you push a commit where this number is
 # increased, we interpret this as a new version being released.
 #
 # Version number must be an string!
-version = "0.0.2"
+version = "0.0.3"
