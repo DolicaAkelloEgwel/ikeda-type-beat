@@ -36,38 +36,24 @@ def _sample(population, n_vals):
     return sorted(result)
 
 
-class IkedaTypeBeat(App):
-    def __init__(self):
-        self.button_states = Buttons(self)
-        self.modes = [self._block_stream, self._two_columns]
-        self._current = self.modes[0]
-        self._index = 0
+def _get_random_points(n_block_points):
+    points = _sample(POSITION_LIST, n_block_points)
+    return [[points[i], points[i + 1]] for i in range(0, len(points), 2)]
 
-        # prepare list of points for block stream mode
+
+class BlockStream:
+    def __init__(self):
+
         self._block_stream_speeds = [
             randint(LOWER_SPEED, UPPER_SPEED) for _ in range(N_ROWS)
         ]
         self._block_stream_pos = []
         for _ in range(N_ROWS):
             n_block_points = choice(range(LOWER_BLOCK, UPPER_BLOCK, 2))
-            self._block_stream_pos.append(self._get_random_points(n_block_points))
+            self._block_stream_pos.append(_get_random_points(n_block_points))
 
-        # prepare list of points for columns mode
-        self._column_block_pos = []
-        for _ in range(2):
-            column_points = []
-            n_blocks = SCREEN_SIZE // COLUMN_BLOCK_HEIGHT
-            for _ in range(n_blocks):
-                column_points.append(
-                    _sample([i for i in range(COLUMN_BLOCK_HEIGHT)], 2)
-                )
-            self._column_block_pos.append(column_points)
-
-    def _get_random_points(self, n_block_points):
-        points = _sample(POSITION_LIST, n_block_points)
-        return [[points[i], points[i + 1]] for i in range(0, len(points), 2)]
-
-    def _draw_mirror_block(self, ctx, x1, x2, y, h):
+    @staticmethod
+    def _draw_mirror_block(ctx, x1, x2, y, h):
         w = x2 - x1
         if x1 > x2:
             ctx.rgb(255, 255, 255).rectangle(x1, y, MAX - x1, h).fill()
@@ -90,7 +76,25 @@ class IkedaTypeBeat(App):
                 if xs[1] >= MAX:
                     xs[1] -= SCREEN_SIZE
 
-    def _two_columns(self, ctx):
+    def draw(self, ctx):
+        clear_background(ctx)
+        self._block_stream(ctx)
+
+
+class TwoColumns:
+    def __init__(self):
+        # prepare list of points for columns mode
+        self._column_block_pos = []
+        for _ in range(2):
+            column_points = []
+            n_blocks = SCREEN_SIZE // COLUMN_BLOCK_HEIGHT
+            for _ in range(n_blocks):
+                column_points.append(
+                    _sample([i for i in range(COLUMN_BLOCK_HEIGHT)], 2)
+                )
+            self._column_block_pos.append(column_points)
+
+    def draw(self, ctx):
         ctx.rgb(255, 255, 255).rectangle(-MAX, -MAX, MAX, SCREEN_SIZE).fill()
         for i in range(2):
             for j in range(len(self._column_block_pos[i])):
@@ -101,6 +105,14 @@ class IkedaTypeBeat(App):
                     i * MAX - MAX, offset, MAX, ys[1] - ys[0]
                 ).fill()
                 self._column_block_pos[i][j] = _sample([i for i in range(4, 10)], 2)
+
+
+class IkedaTypeBeat(App):
+    def __init__(self):
+        self.button_states = Buttons(self)
+        self.modes = [BlockStream(), TwoColumns()]
+        self._current = self.modes[0]
+        self._index = 0
 
     def update(self, delta):
         if self.button_states.get(BUTTON_TYPES["CANCEL"]):
@@ -116,14 +128,7 @@ class IkedaTypeBeat(App):
             self.button_states.clear()
 
     def draw(self, ctx):
-        clear_background(ctx)
-        ctx.rgb(0, 0, 0).rectangle(-MAX, -MAX, SCREEN_SIZE, SCREEN_SIZE).fill()
-        try:
-            self._current(ctx)
-        except Exception as e:
-            with open("log.txt", "w") as log_file:
-                log_file.write(str(e))
-                self.minimise()
+        self._current.draw(ctx)
 
 
 __app_export__ = IkedaTypeBeat
