@@ -111,24 +111,21 @@ class IkedaTypeBeat(App):
     def __init__(self):
         self.button_states = Buttons(self)
         self.modes = [BlockStream(), TwoColumns()]
-        self._current = self.modes[0]
-        self._index = 0
+        self.index = 0
 
     def update(self, delta):
         if self.button_states.get(BUTTON_TYPES["CANCEL"]):
             self.button_states.clear()
             self.minimise()
         elif self.button_states.get(BUTTON_TYPES["UP"]):
-            self._index = (self._index - 1) % len(self.modes)
-            self._current = self.modes[self._index]
+            self.index = (self.index - 1) % len(self.modes)
             self.button_states.clear()
         elif self.button_states.get(BUTTON_TYPES["DOWN"]):
-            self._index = (self._index + 1) % len(self.modes)
-            self._current = self.modes[self._index]
+            self.index = (self.index + 1) % len(self.modes)
             self.button_states.clear()
 
     def draw(self, ctx):
-        self._current.draw(ctx)
+        self.modes[self.index].draw(ctx)
 
 
 __app_export__ = IkedaTypeBeat
