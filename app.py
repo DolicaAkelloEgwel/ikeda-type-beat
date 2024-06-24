@@ -13,10 +13,10 @@ N_ROWS = MAX * 2 // ROW_HEIGHT + 1
 
 # these need to be even numbers
 LOWER_BLOCK = 4
-UPPER_BLOCK = 30
+UPPER_BLOCK = 40
 
 LOWER_SPEED = 1
-UPPER_SPEED = 16
+UPPER_SPEED = 8
 
 POSITION_LIST = [i for i in range(-120, 120)]
 
