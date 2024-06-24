@@ -41,16 +41,21 @@ def _get_random_points(n_block_points):
     return [[points[i], points[i + 1]] for i in range(0, len(points), 2)]
 
 
+def create_block_points(count):
+    block_points = []
+    for _ in range(count):
+        n_block_points = choice(range(LOWER_BLOCK, UPPER_BLOCK, 2))
+        block_points.append(_get_random_points(n_block_points))
+    return block_points
+
+
 class BlockStream:
     def __init__(self):
 
         self._block_stream_speeds = [
             randint(LOWER_SPEED, UPPER_SPEED) for _ in range(N_ROWS)
         ]
-        self._block_stream_pos = []
-        for _ in range(N_ROWS):
-            n_block_points = choice(range(LOWER_BLOCK, UPPER_BLOCK, 2))
-            self._block_stream_pos.append(_get_random_points(n_block_points))
+        self._block_stream_pos = create_block_points(N_ROWS)
 
     @staticmethod
     def _draw_mirror_block(ctx, x1, x2, y, h):
@@ -83,28 +88,17 @@ class BlockStream:
 
 class TwoColumns:
     def __init__(self):
-        # prepare list of points for columns mode
-        self._column_block_pos = []
-        for _ in range(2):
-            column_points = []
-            n_blocks = SCREEN_SIZE // COLUMN_BLOCK_HEIGHT
-            for _ in range(n_blocks):
-                column_points.append(
-                    _sample([i for i in range(COLUMN_BLOCK_HEIGHT)], 2)
-                )
-            self._column_block_pos.append(column_points)
+        self.n_cols = 2
 
     def draw(self, ctx):
-        ctx.rgb(255, 255, 255).rectangle(-MAX, -MAX, MAX, SCREEN_SIZE).fill()
-        for i in range(2):
-            for j in range(len(self._column_block_pos[i])):
-                ys = self._column_block_pos[i][j]
+        clear_background(ctx)
+        ctx.rgb(255, 255, 255).rectangle(-MAX, -MAX, SCREEN_SIZE, SCREEN_SIZE).fill()
+        block_points = create_block_points(self.n_cols)
+        for i in range(self.n_cols):
+            for j in range(len(block_points[i])):
+                ys = block_points[i][j]
                 height = ys[1] - ys[0]
-                offset = j * 24 - MAX + randint(0, COLUMN_BLOCK_HEIGHT - height)
-                ctx.rgb(255 * i, 255 * i, 255 * i).rectangle(
-                    i * MAX - MAX, offset, MAX, ys[1] - ys[0]
-                ).fill()
-                self._column_block_pos[i][j] = _sample([i for i in range(4, 10)], 2)
+                ctx.rgb(0, 0, 0).rectangle(i * MAX - MAX, ys[0], MAX, height).fill()
 
 
 class IkedaTypeBeat(App):
