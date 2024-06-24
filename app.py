@@ -101,10 +101,64 @@ class TwoColumns:
                 ctx.rgb(0, 0, 0).rectangle(i * MAX - MAX, ys[0], MAX, height).fill()
 
 
+class DynamicColumns:
+    def __init__(self, max_cols=8):
+        self.max_cols = max_cols
+        self.block_points = create_block_points(self.max_cols)
+        self.speeds = [(i % 2) * 4 - 2 for i in range(self.max_cols)]
+        self.counter = 0
+        self.block_width = SCREEN_SIZE / self.max_cols
+
+    @staticmethod
+    def draw_mirror_block(ctx, x, y1, y2, w):
+        if y2 > y1:
+            ctx.rgb(0, 0, 0).rectangle(
+                x,
+                MAX,
+                w,
+                MAX - y2,
+            ).fill()
+            ctx.rgb(0, 0, 0).rectangle(
+                x,
+                y1,
+                w,
+                y1 + MAX,
+            ).fill()
+        else:
+            ctx.rgb(0, 0, 0).rectangle(
+                x,
+                y1,
+                w,
+                y2 - y1,
+            ).fill()
+
+    def draw(self, ctx):
+        clear_background(ctx)
+        ctx.rgb(255, 255, 255).rectangle(-MAX, -MAX, SCREEN_SIZE, SCREEN_SIZE).fill()
+        for i in range(self.max_cols):
+            for j in range(len(self.block_points[i])):
+                ys = self.block_points[i][j]
+                self.draw_mirror_block(
+                    ctx, i * self.block_width - MAX, ys[0], ys[1], self.block_width
+                )
+
+                ys[0] += self.speeds[i]
+                ys[1] += self.speeds[i]
+
+                if ys[0] >= MAX:
+                    ys[0] -= SCREEN_SIZE
+                if ys[1] >= MAX:
+                    ys[1] -= SCREEN_SIZE
+                if ys[0] < -MAX:
+                    ys[0] += SCREEN_SIZE
+                if ys[1] < -MAX:
+                    ys[1] += SCREEN_SIZE
+
+
 class IkedaTypeBeat(App):
     def __init__(self):
         self.button_states = Buttons(self)
-        self.modes = [BlockStream(), TwoColumns()]
+        self.modes = [BlockStream(), TwoColumns(), DynamicColumns()]
         self.index = 0
 
     def update(self, delta):
