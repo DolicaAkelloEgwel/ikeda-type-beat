@@ -89,46 +89,49 @@ class BlockStream:
 class TwoColumns:
     def __init__(self):
         self.n_cols = 2
+        self.cols = [(255, 255, 255), (0, 0, 0)]
 
     def draw(self, ctx):
         clear_background(ctx)
         ctx.rgb(255, 255, 255).rectangle(-MAX, -MAX, SCREEN_SIZE, SCREEN_SIZE).fill()
+        ctx.restore()
         block_points = create_block_points(self.n_cols)
         for i in range(self.n_cols):
             for j in range(len(block_points[i])):
                 ys = block_points[i][j]
                 height = ys[1] - ys[0]
                 ctx.rgb(0, 0, 0).rectangle(i * MAX - MAX, ys[0], MAX, height).fill()
+        ctx.save()
 
 
 class DynamicColumns:
-    def __init__(self, max_cols=8):
+    def __init__(self, max_cols=4):
         self.max_cols = max_cols
         self.block_points = create_block_points(self.max_cols)
-        self.speeds = [(i % 2) * 4 - 2 for i in range(self.max_cols)]
+        # self.speeds = [(i % 2) * 4 - 2 for i in range(self.max_cols)]
+        self.speeds = [1 for _ in range(self.max_cols)]
         self.counter = 0
         self.block_width = SCREEN_SIZE / self.max_cols
 
-    @staticmethod
-    def draw_mirror_block(ctx, x, y1, y2, w):
-        if y2 > y1:
+    def draw_mirror_block(self, ctx, x, y1, y2):
+        if y1 > y2:
             ctx.rgb(0, 0, 0).rectangle(
                 x,
                 MAX,
-                w,
-                MAX - y2,
+                self.block_width,
+                MAX + y2,
             ).fill()
             ctx.rgb(0, 0, 0).rectangle(
                 x,
                 y1,
-                w,
-                y1 + MAX,
+                self.block_width,
+                MAX - y1,
             ).fill()
         else:
             ctx.rgb(0, 0, 0).rectangle(
                 x,
                 y1,
-                w,
+                self.block_width,
                 y2 - y1,
             ).fill()
 
@@ -136,11 +139,9 @@ class DynamicColumns:
         clear_background(ctx)
         ctx.rgb(255, 255, 255).rectangle(-MAX, -MAX, SCREEN_SIZE, SCREEN_SIZE).fill()
         for i in range(self.max_cols):
-            for j in range(len(self.block_points[i])):
-                ys = self.block_points[i][j]
-                self.draw_mirror_block(
-                    ctx, i * self.block_width - MAX, ys[0], ys[1], self.block_width
-                )
+            x = i * self.block_width - MAX
+            for ys in self.block_points[i]:
+                self.draw_mirror_block(ctx, x, ys[0], ys[1])
 
                 ys[0] += self.speeds[i]
                 ys[1] += self.speeds[i]
