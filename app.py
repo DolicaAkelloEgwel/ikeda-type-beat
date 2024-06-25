@@ -108,8 +108,7 @@ class DynamicColumns:
     def __init__(self, max_cols=4):
         self.max_cols = max_cols
         self.block_points = create_block_points(self.max_cols)
-        # self.speeds = [(i % 2) * 4 - 2 for i in range(self.max_cols)]
-        self.speeds = [1 for _ in range(self.max_cols)]
+        self.speeds = [(i % 2) * 4 - 2 for i in range(self.max_cols)]
         self.counter = 0
         self.block_width = SCREEN_SIZE / self.max_cols
 
@@ -117,7 +116,7 @@ class DynamicColumns:
         if y1 > y2:
             ctx.rgb(0, 0, 0).rectangle(
                 x,
-                MAX,
+                -MAX,
                 self.block_width,
                 MAX + y2,
             ).fill()
@@ -146,9 +145,9 @@ class DynamicColumns:
                 ys[0] += self.speeds[i]
                 ys[1] += self.speeds[i]
 
-                if ys[0] >= MAX:
+                if ys[0] > MAX:
                     ys[0] -= SCREEN_SIZE
-                if ys[1] >= MAX:
+                if ys[1] > MAX:
                     ys[1] -= SCREEN_SIZE
                 if ys[0] < -MAX:
                     ys[0] += SCREEN_SIZE
