@@ -105,12 +105,12 @@ class TwoColumns:
 
 
 class DynamicColumns:
-    def __init__(self, max_cols=4):
-        self.max_cols = max_cols
+    def __init__(self):
+        self.max_cols = 8
         self.block_points = create_block_points(self.max_cols)
-        self.speeds = [(i % 2) * 4 - 2 for i in range(self.max_cols)]
+        self.speeds = [(i % 2) * 2 - 1 for i in range(self.max_cols)]
         self.counter = 0
-        self.block_width = SCREEN_SIZE / self.max_cols
+        self.block_width = 0
 
     def draw_mirror_block(self, ctx, x, y1, y2):
         if y1 > y2:
@@ -134,16 +134,26 @@ class DynamicColumns:
                 y2 - y1,
             ).fill()
 
+    def get_cols(self):
+        if self.counter <= 20:
+            return 2
+        if self.counter <= 40:
+            return 4
+        if self.counter <= 60:
+            return 8
+
     def draw(self, ctx):
         clear_background(ctx)
         ctx.rgb(255, 255, 255).rectangle(-MAX, -MAX, SCREEN_SIZE, SCREEN_SIZE).fill()
-        for i in range(self.max_cols):
+        cols = self.get_cols()
+        self.block_width = SCREEN_SIZE / cols
+        for i in range(cols):
             x = i * self.block_width - MAX
             for ys in self.block_points[i]:
                 self.draw_mirror_block(ctx, x, ys[0], ys[1])
 
-                ys[0] += self.speeds[i]
-                ys[1] += self.speeds[i]
+                ys[0] += self.speeds[i] * cols
+                ys[1] += self.speeds[i] * cols
 
                 if ys[0] > MAX:
                     ys[0] -= SCREEN_SIZE
@@ -153,6 +163,10 @@ class DynamicColumns:
                     ys[0] += SCREEN_SIZE
                 if ys[1] < -MAX:
                     ys[1] += SCREEN_SIZE
+
+        self.counter += 1
+        if self.counter > 60:
+            self.counter = 0
 
 
 class IkedaTypeBeat(App):
