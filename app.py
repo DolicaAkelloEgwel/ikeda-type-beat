@@ -83,6 +83,7 @@ class BlockStream:
 
     def draw(self, ctx):
         clear_background(ctx)
+        ctx.rgb(255, 255, 255).rectangle(-MAX, -MAX, SCREEN_SIZE, SCREEN_SIZE).fill()
         self._block_stream(ctx)
 
 
